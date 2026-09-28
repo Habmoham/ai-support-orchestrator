@@ -60,7 +60,8 @@
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: var(--resolved);
+    background: var(--text-tertiary);
+    transition: background 0.3s;
   }
 
   main {
@@ -273,7 +274,7 @@
 
 <header>
   <h1>Support Orchestrator</h1>
-  <div class="status"><span class="dot"></span>Connected to localhost:8000</div>
+  <div class="status"><span class="dot" id="statusDot"></span><span id="statusText">Checking backend...</span></div>
 </header>
 
 <main>
@@ -316,7 +317,25 @@
 </main>
 
 <script>
-const API_URL = "http://localhost:8000/tickets";
+const API_BASE = "https://ai-support-orchestrator-b6nl.onrender.com";
+const API_URL = API_BASE + "/tickets";
+
+async function checkBackend() {
+  const dot = document.getElementById("statusDot");
+  const text = document.getElementById("statusText");
+  dot.style.background = "var(--escalated)";
+  text.textContent = "Waking up backend (first load can take up to a minute)...";
+  try {
+    const res = await fetch(API_BASE + "/health");
+    if (!res.ok) throw new Error("status " + res.status);
+    dot.style.background = "var(--resolved)";
+    text.textContent = "Backend online";
+  } catch (err) {
+    dot.style.background = "#E5484D";
+    text.textContent = "Backend unreachable";
+  }
+}
+checkBackend();
 
 function fillSample(email) {
   document.getElementById("email").value = email;
@@ -359,7 +378,7 @@ async function submitTicket() {
     await animateAndRender(data);
   } catch (err) {
     document.getElementById("resultArea").innerHTML =
-      '<div class="empty-state">Error: ' + err.message + '<br>Is the backend running on port 8000?</div>';
+      '<div class="empty-state">Error: ' + err.message + '<br>The backend may still be waking up. Wait a few seconds and try again.</div>';
   } finally {
     btn.disabled = false;
     btn.textContent = "Submit ticket";
