@@ -1,0 +1,36 @@
+{
+  "customers": [
+    {
+      "customer_id": "C-1001",
+      "name": "Sarah Chen",
+      "email": "sarah.chen@example.com",
+      "plan": "Pro Monthly",
+      "plan_price": 29.99,
+      "billing_history": [
+        {"date": "2026-08-15", "amount": 29.99, "status": "paid", "description": "Pro Monthly subscription"},
+        {"date": "2026-09-15", "amount": 29.99, "status": "paid", "description": "Pro Monthly subscription"},
+        {"date": "2026-09-15", "amount": 29.99, "status": "paid", "description": "Pro Monthly subscription - duplicate charge"}
+      ]
+    },
+    {
+      "customer_id": "C-1002",
+      "name": "James Okafor",
+      "email": "james.okafor@example.com",
+      "plan": "Basic Monthly",
+      "plan_price": 9.99,
+      "billing_history": [
+        {"date": "2026-09-01", "amount": 9.99, "status": "paid", "description": "Basic Monthly subscription"}
+      ]
+    },
+    {
+      "customer_id": "C-1003",
+      "name": "Priya Nair",
+      "email": "priya.nair@example.com",
+      "plan": "Pro Annual",
+      "plan_price": 299.99,
+      "billing_history": [
+        {"date": "2026-01-10", "amount": 299.99, "status": "paid", "description": "Pro Annual subscription"}
+      ]
+    }
+  ]
+}

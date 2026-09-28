@@ -1,0 +1,25 @@
+{
+  "refund_policy": {
+    "standard_window_days": 30,
+    "digital_goods_window_days": 14,
+    "annual_plan_prorated": true
+  },
+  "orders": [
+    {
+      "order_id": "O-5001",
+      "customer_email": "james.okafor@example.com",
+      "product": "Basic Monthly",
+      "amount": 9.99,
+      "purchase_date": "2026-09-01",
+      "refund_eligible": true
+    },
+    {
+      "order_id": "O-5002",
+      "customer_email": "priya.nair@example.com",
+      "product": "Pro Annual",
+      "amount": 299.99,
+      "purchase_date": "2026-01-10",
+      "refund_eligible": false
+    }
+  ]
+}

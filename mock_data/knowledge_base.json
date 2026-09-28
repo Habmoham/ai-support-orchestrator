@@ -1,0 +1,28 @@
+{
+  "articles": [
+    {
+      "id": "KB-001",
+      "title": "Resetting your password",
+      "keywords": ["password", "reset", "login", "locked out", "forgot"],
+      "content": "To reset your password: go to the login page, click 'Forgot Password', enter your email, and follow the link sent to your inbox. Reset links expire after 30 minutes. If you don't receive the email, check your spam folder or request a new link after 5 minutes."
+    },
+    {
+      "id": "KB-002",
+      "title": "App crashing on startup",
+      "keywords": ["crash", "crashing", "won't open", "freezes", "startup"],
+      "content": "If the app crashes on startup: 1) Force-close and reopen the app. 2) Check you're on the latest version in your app store. 3) Restart your device. 4) If it still crashes, uninstall and reinstall the app — this resolves the issue in most cases. Your data is safely stored in the cloud and will restore on reinstall."
+    },
+    {
+      "id": "KB-003",
+      "title": "Sync issues between devices",
+      "keywords": ["sync", "syncing", "not updating", "different on devices"],
+      "content": "Sync issues are usually caused by a poor internet connection or being logged into different accounts. Confirm you're logged into the same account on both devices, ensure both have an active internet connection, then pull down to refresh on the affected device. Sync typically completes within 60 seconds."
+    },
+    {
+      "id": "KB-004",
+      "title": "Two-factor authentication not working",
+      "keywords": ["2fa", "two-factor", "authentication code", "verification code"],
+      "content": "If your 2FA code isn't working: ensure your device's clock is set to automatic/network time, as codes are time-based. Codes refresh every 30 seconds — make sure you're entering the current one. If you've lost access to your authenticator app, use one of your backup codes, or contact support to verify your identity."
+    }
+  ]
+}

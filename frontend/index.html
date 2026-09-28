@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Support Orchestrator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #10141C;
+    --panel: #171C26;
+    --panel-raised: #1D2330;
+    --border: #262C38;
+    --text-primary: #E8EAED;
+    --text-secondary: #8B93A3;
+    --text-tertiary: #5A6274;
+    --processing: #5B8DEF;
+    --resolved: #3FB27F;
+    --escalated: #E0A030;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: "IBM Plex Sans", -apple-system, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .mono { font-family: "IBM Plex Mono", monospace; }
+
+  header {
+    padding: 20px 32px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+  }
+
+  header h1 {
+    font-size: 15px;
+    font-weight: 600;
+    margin: 0;
+    letter-spacing: 0.01em;
+  }
+
+  header .status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-secondary);
+    font-size: 12.5px;
+  }
+
+  .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--resolved);
+  }
+
+  main {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+
+  @media (max-width: 760px) {
+    main { grid-template-columns: 1fr; }
+  }
+
+  .intake {
+    padding: 28px 28px 28px 32px;
+    border-right: 1px solid var(--border);
+  }
+
+  .intake h2, .trace-section h2 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin: 0 0 16px 0;
+  }
+
+  label {
+    display: block;
+    font-size: 12.5px;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+    margin-top: 18px;
+  }
+
+  label:first-of-type { margin-top: 0; }
+
+  textarea, input {
+    width: 100%;
+    padding: 10px 11px;
+    background: var(--panel-raised);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 13.5px;
+  }
+
+  textarea { min-height: 84px; resize: vertical; }
+  textarea:focus, input:focus { outline: none; border-color: var(--processing); }
+
+  .sample-accounts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+  }
+
+  .chip {
+    font-size: 11.5px;
+    padding: 4px 9px;
+    border-radius: 5px;
+    border: 1px solid var(--border);
+    background: var(--panel-raised);
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-family: "IBM Plex Mono", monospace;
+  }
+
+  .chip:hover { border-color: var(--processing); color: var(--text-primary); }
+
+  button.submit {
+    margin-top: 22px;
+    width: 100%;
+    padding: 11px;
+    background: var(--processing);
+    border: none;
+    border-radius: 6px;
+    color: #0B0E14;
+    font-weight: 600;
+    font-size: 13.5px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  button.submit:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .trace-section {
+    padding: 28px 32px 28px 28px;
+  }
+
+  .pipeline {
+    display: flex;
+    align-items: center;
+    margin-bottom: 28px;
+  }
+
+  .stage {
+    flex: 1;
+    text-align: center;
+    padding: 12px 6px;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    background: var(--panel);
+    transition: border-color 0.3s, background 0.3s;
+  }
+
+  .stage .label {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    margin-bottom: 3px;
+  }
+
+  .stage .value {
+    font-size: 12.5px;
+    color: var(--text-secondary);
+    font-family: "IBM Plex Mono", monospace;
+  }
+
+  .stage.active {
+    border-color: var(--processing);
+    background: var(--panel-raised);
+  }
+  .stage.active .value { color: var(--processing); }
+
+  .stage.done-resolved { border-color: var(--resolved); }
+  .stage.done-resolved .value { color: var(--resolved); }
+
+  .stage.done-escalated { border-color: var(--escalated); }
+  .stage.done-escalated .value { color: var(--escalated); }
+
+  .connector {
+    width: 20px;
+    height: 1px;
+    background: var(--border);
+    flex-shrink: 0;
+  }
+
+  .empty-state {
+    color: var(--text-tertiary);
+    font-size: 13px;
+    padding: 40px 0;
+    text-align: center;
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+  }
+
+  .result-panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px 20px;
+  }
+
+  .result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .ticket-id { font-size: 12px; color: var(--text-tertiary); }
+
+  .status-badge {
+    font-size: 11.5px;
+    padding: 3px 10px;
+    border-radius: 5px;
+    font-weight: 500;
+  }
+
+  .status-badge.resolved { background: rgba(63,178,127,0.12); color: var(--resolved); }
+  .status-badge.escalated { background: rgba(224,160,48,0.12); color: var(--escalated); }
+
+  .confidence-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+    font-size: 12.5px;
+    color: var(--text-secondary);
+  }
+
+  .confidence-bar {
+    flex: 1;
+    height: 4px;
+    background: var(--panel-raised);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .confidence-fill { height: 100%; border-radius: 2px; }
+
+  .response-body {
+    white-space: pre-wrap;
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--text-primary);
+  }
+
+  .retry-note {
+    font-size: 11.5px;
+    color: var(--text-tertiary);
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Support Orchestrator</h1>
+  <div class="status"><span class="dot"></span>Connected to localhost:8000</div>
+</header>
+
+<main>
+  <section class="intake">
+    <h2>New ticket</h2>
+
+    <label for="message">Customer message</label>
+    <textarea id="message" placeholder="I was charged twice for my subscription last month..."></textarea>
+
+    <label for="email">Customer email</label>
+    <input id="email" type="email" placeholder="customer@example.com">
+
+    <div class="sample-accounts">
+      <span class="chip" onclick="fillSample('sarah.chen@example.com')">sarah.chen</span>
+      <span class="chip" onclick="fillSample('james.okafor@example.com')">james.okafor</span>
+      <span class="chip" onclick="fillSample('priya.nair@example.com')">priya.nair</span>
+      <span class="chip" onclick="fillSample('unknown@example.com')">unknown</span>
+    </div>
+
+    <button class="submit" id="submitBtn" onclick="submitTicket()">Submit ticket</button>
+  </section>
+
+  <section class="trace-section">
+    <h2>Orchestration trace</h2>
+
+    <div class="pipeline" id="pipeline">
+      <div class="stage" id="stage-triage"><div class="label">1 . Triage</div><div class="value">-</div></div>
+      <div class="connector"></div>
+      <div class="stage" id="stage-agent"><div class="label">2 . Specialist</div><div class="value">-</div></div>
+      <div class="connector"></div>
+      <div class="stage" id="stage-gate"><div class="label">3 . Confidence gate</div><div class="value">-</div></div>
+      <div class="connector"></div>
+      <div class="stage" id="stage-outcome"><div class="label">4 . Outcome</div><div class="value">-</div></div>
+    </div>
+
+    <div id="resultArea">
+      <div class="empty-state">Submit a ticket to see it move through the pipeline</div>
+    </div>
+  </section>
+</main>
+
+<script>
+const API_URL = "http://localhost:8000/tickets";
+
+function fillSample(email) {
+  document.getElementById("email").value = email;
+}
+
+function resetPipeline() {
+  ["stage-triage", "stage-agent", "stage-gate", "stage-outcome"].forEach(id => {
+    const el = document.getElementById(id);
+    el.className = "stage";
+    el.querySelector(".value").textContent = "-";
+  });
+}
+
+function setStage(id, text, className) {
+  const el = document.getElementById(id);
+  el.className = "stage " + className;
+  el.querySelector(".value").textContent = text;
+}
+
+async function submitTicket() {
+  const message = document.getElementById("message").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const btn = document.getElementById("submitBtn");
+
+  if (!message) { alert("Enter a customer message first."); return; }
+
+  btn.disabled = true;
+  btn.textContent = "Processing...";
+  resetPipeline();
+  document.getElementById("resultArea").innerHTML = "";
+
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ customer_message: message, customer_email: email }),
+    });
+    if (!res.ok) throw new Error("Server responded " + res.status);
+    const data = await res.json();
+    await animateAndRender(data);
+  } catch (err) {
+    document.getElementById("resultArea").innerHTML =
+      '<div class="empty-state">Error: ' + err.message + '<br>Is the backend running on port 8000?</div>';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Submit ticket";
+  }
+}
+
+function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+async function animateAndRender(data) {
+  const isResolved = data.final_status === "auto_resolved";
+  const outcomeClass = isResolved ? "done-resolved" : "done-escalated";
+
+  setStage("stage-triage", data.category, "active");
+  await wait(280);
+  setStage("stage-triage", data.category, outcomeClass);
+
+  setStage("stage-agent", data.agent_used_tool || "n/a", "active");
+  await wait(280);
+  setStage("stage-agent", data.agent_used_tool || "n/a", outcomeClass);
+
+  setStage("stage-gate", data.retry_count > 0 ? ("retried x" + data.retry_count) : "checked", "active");
+  await wait(280);
+  setStage("stage-gate", data.retry_count > 0 ? ("retried x" + data.retry_count) : "checked", outcomeClass);
+
+  setStage("stage-outcome", isResolved ? "resolved" : "escalated", "active");
+  await wait(200);
+  setStage("stage-outcome", isResolved ? "resolved" : "escalated", outcomeClass);
+
+  renderResult(data);
+}
+
+function renderResult(data) {
+  const isResolved = data.final_status === "auto_resolved";
+  const confidence = data.agent_confidence || 0;
+  const barColor = isResolved ? "var(--resolved)" : "var(--escalated)";
+
+  document.getElementById("resultArea").innerHTML =
+    '<div class="result-panel">' +
+      '<div class="result-header">' +
+        '<span class="ticket-id mono">' + data.ticket_id + '</span>' +
+        '<span class="status-badge ' + (isResolved ? "resolved" : "escalated") + '">' + data.final_status.replace("_", " ") + '</span>' +
+      '</div>' +
+      '<div class="confidence-row">' +
+        '<span>Agent confidence</span>' +
+        '<div class="confidence-bar"><div class="confidence-fill" style="width:' + (confidence * 100).toFixed(0) + '%; background:' + barColor + '"></div></div>' +
+        '<span class="mono">' + (confidence * 100).toFixed(0) + '%</span>' +
+      '</div>' +
+      '<div class="response-body">' + (data.agent_response || data.resolution_summary || "No response generated.") + '</div>' +
+      (data.retry_count > 0 ? '<div class="retry-note">Retried ' + data.retry_count + ' time(s) before this outcome.</div>' : '') +
+    '</div>';
+}
+</script>
+
+</body>
+</html>
