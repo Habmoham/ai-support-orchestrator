@@ -19,11 +19,20 @@ from tracing_setup import get_langfuse_handler
 
 app = FastAPI(title="AI Customer Support Orchestrator")
 
+# Only these sites may call the API from a browser: the deployed frontend, plus
+# a local static server for development (run `python -m http.server 5500`
+# inside the frontend/ folder). No trailing slashes - origins must match exactly.
+ALLOWED_ORIGINS = [
+    "https://ai-support-orchestrator.vercel.app",
+    "http://localhost:5500",
+    "http://127.0.0.1:5500",
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # fine for local dev; restrict this before any real deployment
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=ALLOWED_ORIGINS,
+    allow_methods=["GET", "POST"],
+    allow_headers=["Content-Type"],
 )
 
 graph_app = build_graph()
